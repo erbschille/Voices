@@ -47,13 +47,13 @@ contrasts_country <- cbind("_gh" = c(-1, 1, 0, 0, 0),
 
 # loading data from packet 1--In packet 1, participants filled out the absorption scale and spiritual events items (N=519)
 d_p1 <- read_csv("d_p1.csv") %>% 
-  mutate(country = factor(country, levels = levels_country))
+  mutate(country = factor(country, levels = levels_country)) 
 
 contrasts(d_p1$country) <- contrasts_country
 
 # loading data from packet 2--In packet 2, participants filled out both the Launay-Slade voice hearing scale and the VISQ inner voice scale (McCarthy-Jones & Fernyhough; only dialogic, evaluative, and other people subscales--did not include condensed speech!). (N=523)
 d_p2 <- read_csv("d_p2.csv") %>% 
-  mutate(country = factor(country, levels = levels_country))
+  mutate(country = factor(country, levels = levels_country)) 
 
 contrasts(d_p2$country) <- contrasts_country
 ```
@@ -71,7 +71,8 @@ dp1_a <- d_p1 %>%
 #spiritual events scores
 dp1_b <- d_p1 %>% 
   filter(scale == "spiritual events (v2)") %>% #just spev questions 
-  filter(question_universal %in% c("voice_ears", "voice_mind")) %>%
+  filter(question_text %in% c("Have you ever heard God or a spirit speak to you in a voice you felt you heard outside your head?",
+                              "Have you heard God or a spirit speak to you in a voice that you felt you experienced inside your head?")) %>%
   group_by(subject_id) %>%
   mutate(voice_score = sum(response, na.rm = TRUE)) %>% #getting absorption score for each person 
   select(country, subject_id, voice_score)
@@ -108,7 +109,7 @@ dp2_e <- d_p2 %>%
 
 # Launay Slade scores 
 dp2_b <- d_p2 %>% 
-  filter(subscale == "hallucination_auditory") %>% 
+  filter(subscale_name == "Hallucination: Auditory") %>% 
   group_by(subject_id) %>%
   mutate(response = as.numeric(response),
          ls_score = sum(response, na.rm = TRUE)) %>% #getting hearing voices score for each person
