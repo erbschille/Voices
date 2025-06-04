@@ -74,7 +74,7 @@ dp1_b <- d_p1 %>%
   filter(question_text %in% c("Have you ever heard God or a spirit speak to you in a voice you felt you heard outside your head?",
                               "Have you heard God or a spirit speak to you in a voice that you felt you experienced inside your head?")) %>%
   group_by(subject_id) %>%
-  mutate(voice_score = sum(response, na.rm = TRUE)) %>% #getting absorption score for each person 
+  mutate(voice_score = sum(response, na.rm = TRUE)) %>% #getting spiritual voice score for each person 
   select(country, subject_id, voice_score)
 
 #joining into a small dataframe with just absorption and spiritual events scores 
@@ -194,6 +194,11 @@ correlations <- dp2_small %>%
   mutate(label = paste0("R = ", round(correlation, 2))) %>%
   ungroup()
 
+n_df <- dp2_small %>%
+  group_by(country) %>%
+  summarise(n = n()) %>%
+  mutate(label = paste0("n = ", n))
+
 dp2_small %>%
   ggplot(aes(x = visq_score_d, y = ls_score)) + 
   geom_point(alpha = 0.7, size = 0.1) + 
@@ -206,6 +211,13 @@ dp2_small %>%
     hjust = 1.1, vjust = 1.5,
     inherit.aes = FALSE
   ) +
+  geom_text(
+    data = n_df,
+    aes(x = -Inf, y = Inf, label = label),
+    hjust = -0.1, vjust = 1.5,
+    inherit.aes = FALSE
+  ) +
+  theme_bw() +
   #scale_color_brewer(palette = "Set2") +
   labs(title = "Study 1: Voice Hearing Predicted by Inner Speech",
        subtitle = "Grouped by country",
@@ -228,6 +240,28 @@ dp2_small %>%
        y = "Voice hearing (Launay Slade)")
 ```
 
+## Table 1
+
+```{r}
+## DIALOGIC subscale
+m.dp2_d <- lm(
+  scale(ls_score, scale = T) ~ 1 + scale(visq_score_d, scale = T) * country, 
+  data = dp2_small)
+summary(m.dp2_d)
+
+##OTHER PEOPLE subscale
+# m.dp2_o <- lm(
+#   scale(ls_score, scale = T) ~ 1 + scale(visq_score_o, scale = T) * country, 
+#   data = dp2_small)
+# summary(m.dp2_o)
+
+## EVALUATIVE subscale
+# m.dp2_e <- lm(
+#   scale(ls_score, scale = T) ~ 1 + scale(visq_score_e, scale = T) * country, 
+#   data = dp2_small)
+# summary(m.dp2_e)
+```
+
 ## Figure 2
 
 Fig. 2 from the manuscript shows N=217 participants’ reports of voice-hearing experiences (Launay-Slade scores) plotted against rescaled scores of inner speech (dialogic subscore of VISQ) and absorption. Inner speech and absorption are predictive of voice hearing across diverse cultural settings.
@@ -240,6 +274,11 @@ df123$visq_score_d <- scales::rescale(df123$visq_score_d, scale = T)
 
 df123 <- df123 %>% rename(inner_speech = visq_score_d)
 
+n_df123 <- df123 %>%
+  group_by(country) %>%
+  summarise(n = n()) %>%
+  mutate(label = paste0("n = ", n))
+
 df123 %>%
   pivot_longer(cols = absorption:inner_speech, names_to = "predictor", values_to = "response") %>%
   mutate(predictor = factor(predictor, levels = c("inner_speech", "absorption"))) %>%
@@ -250,6 +289,13 @@ df123 %>%
               method = "lm", se = TRUE, alpha = 0.1) +
   facet_wrap(~ country, ncol = 3) +  
   scale_color_brewer(palette = "Set2") +
+  geom_text(
+    data = n_df123,
+    aes(x = -Inf, y = Inf, label = label),
+    hjust = -0.1, vjust = 1.5,
+    inherit.aes = FALSE
+  ) +
+  theme_bw() + 
   labs(title = "Study 1: Voice Hearing Predicted by Inner Speech & Absorption",
        subtitle = "Grouped by country",
        x = "Scaled responses",
@@ -259,15 +305,19 @@ df123 %>%
 
 Across samples of undergraduates collected in the US, Ghana, and China (N=217), scores on the revised Launay-Slade Hallucinations scale were positively correlated with dialogic VISQ scores ($\beta$ = 0.45, p<0.001) 
 
+## Table 2
+
 ```{r}
 m.voice_visq <- lm(
-  scale(voice_hearing_launayslade, scale = T) ~ 1 + scale(inner_speech, scale = T) * country, 
+  scale(voice_hearing_launayslade, scale = T) ~ 1 + scale(inner_speech, scale = T) * country, #inner_speech is the dialogic subscale
   data = df123)
 
 summary(m.voice_visq)
 ```
 
 and absorption scores ($\beta$=0.48, p<0.001; these standardized beta coefficients and p-values come from separate regression models for each predictor, each including main effects and interactions with country). 
+
+## Table 3
 
 ```{r}
 #model of just absorption for people who did both 
@@ -280,8 +330,11 @@ summary(m.voice_abs)
 
 We also note that absorption is a predictor of spiritual experiences of all kinds (Luhrmann, Weisman, et al., 2021). In particular, in Study 1, we found that absorption was a significant predictor of spiritual voice-hearing experiences—namely hearing the voice of God or a spirit with their ears or in their mind ($\beta$=0.25, p<0.001).
 
+## Table 4 
+
 ```{r}
 # model of people in packet 1--spiritual events predicted by absorption
+## Note that voice_score here is spiritual voice score, taken by summing together voice questions from spiritual events survey 
 m.dp1 <- lm(
   scale(voice_score, scale = T) ~ 1 + scale(abs_score, scale = T) * country, 
   data = dp1_small)
