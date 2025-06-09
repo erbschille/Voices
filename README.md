@@ -1,4 +1,4 @@
-This repository contains data and analyses to accompany the paper "Voice-hearing, inner speech, and absorption: the role of an experiential orientation to the mind"
+This repository contains data and analyses to accompany the paper "Voice-hearing in the general population: the relationship between inner speech, absorption and voice-like hallucinations"
 
 The files: 
 - voices_forpub.Rmd contains the analyses used to generate the results for the paper 
@@ -9,4 +9,8 @@ The files:
 
 The analysis file uses the following R packages in these versions:
 - R version 4.4.1 (2024-06-14)
-- tidyverse_2.0.0- qualtRics_3.2.1- parameters_0.22.2- mediation_4.5.0- lavaan_0.6-19
+- tidyverse_2.0.0
+- qualtRics_3.2.1
+- parameters_0.22.2
+- mediation_4.5.0
+- lavaan_0.6-19
